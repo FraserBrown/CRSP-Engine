@@ -1,1 +1,1 @@
-# RSPQL-Engine
+# Create Continuous RDF Stream Processing Engine (CRSP Engine) using RSPQL
