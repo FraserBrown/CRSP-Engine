@@ -1,6 +1,8 @@
 package org.crspengine;
 
 import com.google.gson.*;
+
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
@@ -13,9 +15,9 @@ import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 public class JsonToInternalGraphStructure {
     public static void main (String [] args){
@@ -227,11 +229,22 @@ public class JsonToInternalGraphStructure {
         if (jsonTree.isJsonObject()) {
             JsonObject jo = jsonTree.getAsJsonObject();
 
-            //TODO: extract namespaces from context
             JsonElement context = jo.getAsJsonObject("@context");
-
-            String namespace_ex = "http://example.org/";
-
+            
+            //Find @vocab primitive, eg. http://www.example.org/data-vocabulary#
+            String namespace_ex = jo.getAsJsonObject("@context").getAsJsonPrimitive("@vocab").getAsString();
+            //Make sure url ends with a /
+            if(namespace_ex.matches(".*//.*/.*")) {
+	            //Substring to get the only the server name, eg. http://www.example.org/
+	            namespace_ex = namespace_ex.substring(0, StringUtils.ordinalIndexOf(namespace_ex, "/", 3)+1);
+	            //Substring to remove www. eg. http://example.org/
+	            namespace_ex = namespace_ex.replaceFirst(Pattern.quote("www."), "");
+            }
+            else
+            {
+            	throw new java.lang.RuntimeException("The @vocab namespace must end with a /");
+            }
+            
             // look at graph streams and pull out either sing json graph object or array of graphs
             if (jo.get("@graph").isJsonArray()){
                 JsonArray graphs = jo.getAsJsonArray("@graph");
@@ -313,9 +326,12 @@ public class JsonToInternalGraphStructure {
 
             String queryString = "" +
                     "PREFIX ex: <http://example.org/> " +
-                    "SELECT ?s ?p ?o " +
+                    "SELECT ?p ?o " +
+        		    "FROM NAMED WINDOW :wind ON s:example [RANGE PT1H STEP PT1H] " +
                     "WHERE { " +
+        		    "WINDOW :win { \n" +
                     "      ex:Paris ?p ?o" +
+                    "}" +
                     "}";
 
             System.out.println("\nQuery Running: " + queryString + "\n");
