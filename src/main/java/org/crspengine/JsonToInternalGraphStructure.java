@@ -327,10 +327,7 @@ public class JsonToInternalGraphStructure {
             String queryString = "" +
                     "PREFIX ex: <http://example.org/> " +
                     "SELECT ?p ?o " +
-<<<<<<< HEAD
         		    "FROM NAMED WINDOW :wind ON s:example [RANGE PT1H STEP PT1H] " +
-=======
->>>>>>> 1d22ddd0edf957ac64dc7559b9709995a639580a
                     "WHERE { " +
         		    "WINDOW :win { \n" +
                     "      ex:Paris ?p ?o" +
