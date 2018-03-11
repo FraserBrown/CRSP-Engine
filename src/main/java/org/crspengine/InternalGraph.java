@@ -9,9 +9,9 @@ import java.util.ArrayList;
 
 public class InternalGraph {
 
-    private ValueFactory vf;    // value factory just incase its required
+    private ValueFactory vf;    // value factory just in case it's required
     private ArrayList<String> ns;   // list of namespaces for this graph
-    private String observedAt;  // obsered at meta data
+    private String observedAt;  // observed at meta data
     private Model graphData;    // graph data
     private String graphID; // graphID TODO: change to rdf4j IRI
 

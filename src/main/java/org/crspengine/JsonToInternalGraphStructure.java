@@ -17,6 +17,7 @@ import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class JsonToInternalGraphStructure {
@@ -295,8 +296,8 @@ public class JsonToInternalGraphStructure {
                 JsonElement graphs = jo.getAsJsonObject("@graph");
             }
         }
-
-        System.out.print(graphStream);
+//
+//        System.out.print(graphStream);
 
         /**
          * Query Internal graph streams graphData.
@@ -320,7 +321,7 @@ public class JsonToInternalGraphStructure {
                          conn.getStatements(null, null, null)) {
                 while (result.hasNext()) {
                     Statement st = result.next();
-                    System.out.println("db contains: " + st);
+                    //System.out.println("db contains: " + st);
                 }
             }
 
@@ -334,19 +335,32 @@ public class JsonToInternalGraphStructure {
                     "}" +
                     "}";
 
-            System.out.println("\nQuery Running: " + queryString + "\n");
+            //System.out.println("\nQuery Running: " + queryString + "\n");
 
             TupleQuery query = conn.prepareTupleQuery(queryString);
             try (TupleQueryResult r = query.evaluate()){
                 // we just iterate over all solutions in the result...
                 System.out.println("Results:");
+                BindingSet solution = null;
+                Set<String> bindingNames;
                 while (r.hasNext()) {
-                    BindingSet solution = r.next();
-                    System.out.println("?p = " + solution.getValue("p") + "\n" + "?o = " + solution.getValue("o") + "\n");
+                  solution = r.next();
+                  bindingNames = solution.getBindingNames();
+                  System.out.println(bindingNames);
+                  Iterator iterator = bindingNames.iterator();
+                  String code;
+                  while (iterator.hasNext())
+                  {
+                	  code = (String) iterator.next();
+                	  System.out.println("?"+code+" = "+ solution.getValue(code)+"\n");
+                  }
+                    //System.out.println("?p = " + solution.getValue("p") + "\n" + "?o = " + solution.getValue("o") + "\n");
                 }
+            
             }catch (Exception e){
                 System.err.println("ERROR");
             }
         }
+
     }
 }
