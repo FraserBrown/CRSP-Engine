@@ -27,6 +27,24 @@ public class SyntaxTreeBuilderDefaultVisitor implements SyntaxTreeBuilderVisitor
   public Object visit(ASTSelectQuery node, Object data) throws VisitorException{
     return defaultVisit(node, data);
   }
+  public Object visit(ASTFromNamedWindow node, Object data) throws VisitorException{
+    return defaultVisit(node, data);
+  }
+  public Object visit(ASTWindow node, Object data) throws VisitorException{
+    return defaultVisit(node, data);
+  }
+  public Object visit(ASTTimeUnit node, Object data) throws VisitorException{
+    return defaultVisit(node, data);
+  }
+  public Object visit(ASTWindowOverlap node, Object data) throws VisitorException{
+    return defaultVisit(node, data);
+  }
+  public Object visit(ASTLogicalWindow node, Object data) throws VisitorException{
+    return defaultVisit(node, data);
+  }
+  public Object visit(ASTPhysicalWindow node, Object data) throws VisitorException{
+    return defaultVisit(node, data);
+  }
   public Object visit(ASTSelect node, Object data) throws VisitorException{
     return defaultVisit(node, data);
   }
@@ -52,6 +70,9 @@ public class SyntaxTreeBuilderDefaultVisitor implements SyntaxTreeBuilderVisitor
     return defaultVisit(node, data);
   }
   public Object visit(ASTWhereClause node, Object data) throws VisitorException{
+    return defaultVisit(node, data);
+  }
+  public Object visit(ASTWindowInWhereClause node, Object data) throws VisitorException{
     return defaultVisit(node, data);
   }
   public Object visit(ASTBindingsClause node, Object data) throws VisitorException{
@@ -436,4 +457,4 @@ public class SyntaxTreeBuilderDefaultVisitor implements SyntaxTreeBuilderVisitor
     return defaultVisit(node, data);
   }
 }
-/* JavaCC - OriginalChecksum=341331c7b62673d1d562435e877fa94b (do not edit this line) */
+/* JavaCC - OriginalChecksum=25fa96fef7a18510148fb7d34f1db5ff (do not edit this line) */

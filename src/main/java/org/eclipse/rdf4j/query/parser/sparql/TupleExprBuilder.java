@@ -3012,4 +3012,46 @@ public class TupleExprBuilder extends AbstractASTVisitor {
 			}
 		}
 	}
+
+	@Override
+	public Object visit(ASTFromNamedWindow node, Object data) throws VisitorException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object visit(ASTWindow node, Object data) throws VisitorException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object visit(ASTTimeUnit node, Object data) throws VisitorException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object visit(ASTWindowOverlap node, Object data) throws VisitorException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object visit(ASTLogicalWindow node, Object data) throws VisitorException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object visit(ASTPhysicalWindow node, Object data) throws VisitorException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object visit(ASTWindowInWhereClause node, Object data) throws VisitorException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

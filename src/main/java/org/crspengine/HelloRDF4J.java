@@ -36,13 +36,13 @@ public class HelloRDF4J {
 		    queryString += "PREFIX rdfs: <" + RDFS.NAMESPACE + "> \n";
 		    queryString += "PREFIX ns1: <Person> \n";
 		    queryString += "PREFIX ex: <http://example.org/> \n";
-		    queryString += "SELECT ?s \n";
+		    queryString += "SELECT ?s (count(?s) as ?countUsers) \n";
 		    queryString += "FROM NAMED WINDOW :wind ON s:trips [RANGE PT1H STEP PT1H] \n";
 		    queryString += "WHERE { \n";
 		    queryString += "WINDOW :win { \n";
 		    queryString += "    ?s a <" + FOAF.NAMESPACE + "Person> \n";
 		    queryString += "}";
-		    queryString += "}";
+		    queryString += "   GROUP BY ?s } \n";
 		    
 		    //create list of each word in the query
 		    List<String> wordList = new ArrayList<String>(Arrays.asList(queryString.split(" ")));
@@ -107,6 +107,8 @@ public class HelloRDF4J {
 	    	    // ... and print out the value of the variable bindings
 	    	    // for ?s and ?n
 	    	    System.out.println("?s = " + solution.getValue("s"));
+	    	    System.out.println("?countUsers = " + solution.getValue("countUsers"));
+
 	    	}
 		    }
 		}

@@ -26,6 +26,7 @@ PARSER_BEGIN(SyntaxTreeBuilder)
 package org.eclipse.rdf4j.query.parser.sparql.ast;
 
 import java.io.StringReader;
+import org.eclipse.rdf4j.query.parser.sparql.ast.utility_files.*;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
@@ -33,7 +34,7 @@ import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 import org.eclipse.rdf4j.query.algebra.Compare.CompareOp;
 import org.eclipse.rdf4j.query.algebra.MathExpr.MathOp;
 
-public class SyntaxTreeBuilder {
+public class SyntaxTreeBuilder extends SyntaxTreeBuilderBase {
 
 	/**
 	 * Parses the supplied SPARQL query and builds a syntax tree from it.
@@ -162,7 +163,7 @@ TOKEN :
 |	<STAR: "*">
 |	<QUESTION: "?">
 |	<SLASH: "/">
-|       <PIPE: "|">
+|   <PIPE: "|">
 |	<INVERSE: "^">
 |	<DT_PREFIX: "^^">
 |	<NIL: <LPAREN> (<WS_CHAR>)* <RPAREN>>
@@ -275,6 +276,9 @@ TOKEN [IGNORE_CASE] :
 |	<SHA256: "sha256">
 |	<SHA384: "sha384">
 |	<SHA512: "sha512">
+|   <TUMBLING: "tumbling">
+|   <TRIPLES: "triples"> 
+|   <PT: "pt">
 }
 
 TOKEN [IGNORE_CASE] :	// SPARQL 1.1 Update-specific tokens
@@ -307,7 +311,6 @@ TOKEN:
 |	<BLANK_NODE_LABEL: "_:" (<PN_CHARS_U> | <NUM>) ((<PN_CHARS>|".")* <PN_CHARS>)? >
 |	<VAR1: "?" <VARNAME>>
 |	<VAR2: "$" <VARNAME>>
-|	<VARTIME: "PT" <INTEGER> ("H"|"M")>
 |	<LANGTAG: "@" (<ALPHA>)+ ("-" (<ALPHA>|<NUM>)+)*>
 |	<INTEGER: (<NUM>)+>
 |	<INTEGER_POSITIVE: "+" <INTEGER>>
@@ -332,7 +335,7 @@ TOKEN:
 |	<#SAFE_CHAR_LONG2: (~["\"","\\"])>
 |	<#ECHAR: "\\" ["t", "b", "n", "r", "f", "\\", "\"", "'"]>
 |	<#HEX: ["0"-"9"] | ["A"-"F"] | ["a"-"f"]>
-|	<#ALPHA: ["a"-"z","A"-"Z"]>
+|	<ALPHA: ["a"-"z","A"-"Z"]>
 |	<#NUM: ["0"-"9"]>
 }
 
@@ -415,24 +418,89 @@ void SelectQuery() :
 {}
 {
 	Select()
+	FromNamedWindow()
+	( DatasetClause() )*
+	WhereClause()
+	SolutionModifier()
+	[BindingsClause()]
+	<RBRACE>
+}
+
+void FromNamedWindow() :
+{  Token t ; String windowName =""; String s1 =""; }
+{
+  { Window window;}
 	<FROM>
 	<NAMED>
 	<WINDOW>
-	<PNAME_LN>
+	t = <PNAME_LN> { windowName = t.image ; }
 	<ON>
 	<PNAME_LN>
 	<LBRACK>
 	<RANGE>
-	<VARTIME>
-	<STEP>
-	<VARTIME>
+	window = Window()
 	<RBRACK>
-	( DatasetClause() )*
-	WhereClause()
-	SolutionModifier()
-	<RBRACE>
-	[BindingsClause()]
+	{ StreamInfo si = new StreamInfo(windowName,window) ;
+	  addStreams(si);
+   	}
 }
+
+Window Window():{}
+{
+  {Window window; }
+  (LOOKAHEAD(2)
+  window = LogicalWindow() {return window;}
+  | window = PhysicalWindow() {return window;})
+}
+
+TimeUnit TimeUnit():{Token t; String timeunit = "";}
+{
+	t = <ALPHA>
+	{timeunit = timeunit + t.image ;
+	if(!timeunit.equalsIgnoreCase("ms") && !timeunit.equalsIgnoreCase("s") && !timeunit.equalsIgnoreCase("m") && !timeunit.equalsIgnoreCase("h") && !timeunit.equalsIgnoreCase("d"))
+		throw new ParseException();
+	}
+	{return TimeUnit.getUnitOfMeasure(timeunit); }
+}
+
+TimeIntervalDescription WindowOverlap():{Token t; String tempStepValue = "";}
+{
+  {TimeIntervalDescription stepDescription = new TimeIntervalDescription();
+  TimeUnit tm; }
+  (LOOKAHEAD(2)
+    (
+     t = <STEP>
+	 <PT>
+     (t = <INTEGER> { tempStepValue = tempStepValue + t.image ; })+
+     tm = TimeUnit(){ stepDescription.setTimeUnit(tm) ; stepDescription.setValue(Integer.parseInt(tempStepValue)); return stepDescription; }
+    )
+  | t = <TUMBLING> { return null; })
+}
+
+LogicalWindow LogicalWindow():{Token t; String tempRangeValue = "";}
+{
+  {TimeIntervalDescription rangeDescription = new TimeIntervalDescription();
+   TimeIntervalDescription stepDescription = new TimeIntervalDescription();
+   TimeUnit tm;
+   boolean isTumbling;	
+  }
+  <PT>
+  (t = <INTEGER> { tempRangeValue = tempRangeValue + t.image ; })+ tm = TimeUnit() stepDescription = WindowOverlap()
+  {rangeDescription.setTimeUnit(tm) ;
+   rangeDescription.setValue(Integer.parseInt(tempRangeValue));
+   if(stepDescription == null)    
+   		isTumbling = true;
+   else
+        isTumbling = false;
+   
+  return new LogicalWindow(rangeDescription,stepDescription,isTumbling) ; } 
+}
+
+PhysicalWindow PhysicalWindow():{Token t; String windowRange = "";}
+{
+  t = <TRIPLES> (t = <INTEGER> { windowRange = windowRange + t.image ; })+
+  { return new PhysicalWindow(Integer.parseInt(windowRange))  ; }
+ }
 
 void SubSelect() #SelectQuery : // subselect does not accept dataset clauses
 {}
@@ -538,8 +606,19 @@ void DatasetClause() :
 void WhereClause() :
 {}
 {
-	 [<WHERE>] GroupGraphPattern()
+	 [<WHERE>]
+	 <LBRACE>
+	 WindowInWhereClause()
+	 GroupGraphPattern()
 }
+
+void WindowInWhereClause() :
+{Token t; String windowInWhereName ="";}
+{
+	<WINDOW>
+	t = <PNAME_LN> { windowInWhereName = t.image ; }
+}
+
 
 void BindingsClause() :
 {}
@@ -663,10 +742,7 @@ void Offset() :
 Token GroupGraphPattern() #GraphPatternGroup :
 {Token endOfPatternToken; }
 {
-	<LBRACE>
-	<WINDOW>
-	<PNAME_LN>
-	<LBRACE>
+	<LBRACE> 
 	(
 	    SubSelect() 
 	    | 

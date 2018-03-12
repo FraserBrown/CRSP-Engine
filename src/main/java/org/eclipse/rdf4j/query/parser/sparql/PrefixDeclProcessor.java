@@ -22,13 +22,20 @@ import org.eclipse.rdf4j.model.vocabulary.SESAME;
 import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 import org.eclipse.rdf4j.query.MalformedQueryException;
 import org.eclipse.rdf4j.query.parser.sparql.ast.ASTDeleteData;
+import org.eclipse.rdf4j.query.parser.sparql.ast.ASTFromNamedWindow;
 import org.eclipse.rdf4j.query.parser.sparql.ast.ASTIRI;
 import org.eclipse.rdf4j.query.parser.sparql.ast.ASTInsertData;
+import org.eclipse.rdf4j.query.parser.sparql.ast.ASTLogicalWindow;
 import org.eclipse.rdf4j.query.parser.sparql.ast.ASTOperationContainer;
+import org.eclipse.rdf4j.query.parser.sparql.ast.ASTPhysicalWindow;
 import org.eclipse.rdf4j.query.parser.sparql.ast.ASTPrefixDecl;
 import org.eclipse.rdf4j.query.parser.sparql.ast.ASTQName;
 import org.eclipse.rdf4j.query.parser.sparql.ast.ASTServiceGraphPattern;
+import org.eclipse.rdf4j.query.parser.sparql.ast.ASTTimeUnit;
 import org.eclipse.rdf4j.query.parser.sparql.ast.ASTUnparsedQuadDataBlock;
+import org.eclipse.rdf4j.query.parser.sparql.ast.ASTWindow;
+import org.eclipse.rdf4j.query.parser.sparql.ast.ASTWindowInWhereClause;
+import org.eclipse.rdf4j.query.parser.sparql.ast.ASTWindowOverlap;
 import org.eclipse.rdf4j.query.parser.sparql.ast.SyntaxTreeBuilderTreeConstants;
 import org.eclipse.rdf4j.query.parser.sparql.ast.VisitorException;
 
@@ -189,6 +196,48 @@ public class PrefixDeclProcessor {
 		{
 			node.setPrefixDeclarations(prefixMap);
 			return super.visit(node, data);
+		}
+
+		@Override
+		public Object visit(ASTFromNamedWindow node, Object data) throws VisitorException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Object visit(ASTWindow node, Object data) throws VisitorException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Object visit(ASTTimeUnit node, Object data) throws VisitorException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Object visit(ASTWindowOverlap node, Object data) throws VisitorException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Object visit(ASTLogicalWindow node, Object data) throws VisitorException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Object visit(ASTPhysicalWindow node, Object data) throws VisitorException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Object visit(ASTWindowInWhereClause node, Object data) throws VisitorException {
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 	}

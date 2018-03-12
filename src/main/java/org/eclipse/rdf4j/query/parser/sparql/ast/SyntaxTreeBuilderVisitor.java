@@ -10,6 +10,12 @@ public interface SyntaxTreeBuilderVisitor
   public Object visit(ASTBaseDecl node, Object data) throws VisitorException;
   public Object visit(ASTPrefixDecl node, Object data) throws VisitorException;
   public Object visit(ASTSelectQuery node, Object data) throws VisitorException;
+  public Object visit(ASTFromNamedWindow node, Object data) throws VisitorException;
+  public Object visit(ASTWindow node, Object data) throws VisitorException;
+  public Object visit(ASTTimeUnit node, Object data) throws VisitorException;
+  public Object visit(ASTWindowOverlap node, Object data) throws VisitorException;
+  public Object visit(ASTLogicalWindow node, Object data) throws VisitorException;
+  public Object visit(ASTPhysicalWindow node, Object data) throws VisitorException;
   public Object visit(ASTSelect node, Object data) throws VisitorException;
   public Object visit(ASTProjectionElem node, Object data) throws VisitorException;
   public Object visit(ASTConstructQuery node, Object data) throws VisitorException;
@@ -19,6 +25,7 @@ public interface SyntaxTreeBuilderVisitor
   public Object visit(ASTAskQuery node, Object data) throws VisitorException;
   public Object visit(ASTDatasetClause node, Object data) throws VisitorException;
   public Object visit(ASTWhereClause node, Object data) throws VisitorException;
+  public Object visit(ASTWindowInWhereClause node, Object data) throws VisitorException;
   public Object visit(ASTBindingsClause node, Object data) throws VisitorException;
   public Object visit(ASTInlineData node, Object data) throws VisitorException;
   public Object visit(ASTBindingSet node, Object data) throws VisitorException;
@@ -147,4 +154,4 @@ public interface SyntaxTreeBuilderVisitor
   public Object visit(ASTInsertClause node, Object data) throws VisitorException;
   public Object visit(ASTModify node, Object data) throws VisitorException;
 }
-/* JavaCC - OriginalChecksum=f9c5729b9db98161a08ccd8a7f4b3a06 (do not edit this line) */
+/* JavaCC - OriginalChecksum=2932cf8ac28a50b4b8b63117ca80896a (do not edit this line) */
