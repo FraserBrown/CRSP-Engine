@@ -31,6 +31,7 @@ public class SyntaxTreeBuilder extends SyntaxTreeBuilderBase/*@bgen(jjtree)*/imp
 
                 ASTQueryContainer container = stb.QueryContainer();
                 container.setSourceString(query);
+                container.streamWindow = stb.streams;
                 return container;
         }
 

@@ -9,9 +9,14 @@
 
 package org.eclipse.rdf4j.query.parser.sparql.ast;
 
+import org.eclipse.rdf4j.query.parser.sparql.ast.utility_files.StreamInfo;
+
+import java.util.ArrayList;
+
 public class ASTQueryContainer extends ASTOperationContainer {
 
 	private String sourceString;
+	public ArrayList<StreamInfo> streamWindow = null;
 
 	public ASTQueryContainer(int id) {
 		super(id);

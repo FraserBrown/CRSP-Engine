@@ -9,6 +9,9 @@ package org.eclipse.rdf4j.query.parser;
 
 import org.eclipse.rdf4j.query.Dataset;
 import org.eclipse.rdf4j.query.algebra.TupleExpr;
+import org.eclipse.rdf4j.query.parser.sparql.ast.utility_files.StreamInfo;
+
+import java.util.ArrayList;
 
 /**
  * Abstract super class of all query types that a query parser can generate.
@@ -22,6 +25,7 @@ public abstract class ParsedQuery extends ParsedOperation {
 	 *-----------*/
 
 	private TupleExpr tupleExpr;
+	public ArrayList<StreamInfo> streamWindow = null;
 
 	/**
 	 * The dataset that was specified in the operation, if any.

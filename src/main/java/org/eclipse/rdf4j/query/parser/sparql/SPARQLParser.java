@@ -167,6 +167,7 @@ public class SPARQLParser implements QueryParser {
 				ASTQuery queryNode = qc.getQuery();
 				if (queryNode instanceof ASTSelectQuery) {
 					query = new ParsedTupleQuery(queryStr, tupleExpr);
+					query.streamWindow = qc.streamWindow;
 				}
 				else if (queryNode instanceof ASTConstructQuery) {
 					query = new ParsedGraphQuery(queryStr, tupleExpr, prefixes);

@@ -191,21 +191,26 @@ public class UserInterface {
         // Open a connection to the database
         try (RepositoryConnection conn = db.getConnection()) {
             // add the graphData models to db
-            for (Iterator<InternalGraph> i = graphStream.iterator(); i.hasNext(); ){
-                InternalGraph g = i.next();
-                conn.add(g.getGraphData());
-            }
+			conn.add(new ModelBuilder().build()); //populate database with null model
 
-
-            // let's check that our data is actually in the database
-            try (RepositoryResult<Statement> result =
-                         conn.getStatements(null, null, null)) {
-                while (result.hasNext()) {
-                    Statement st = result.next();
-                }
-            }
 
             TupleQuery query = conn.prepareTupleQuery(queryString);
+
+            // filter graph stream list based on window times
+
+            for (Iterator<InternalGraph> i = graphStream.iterator(); i.hasNext(); ){
+				InternalGraph g = i.next();
+				conn.add(g.getGraphData());
+			}
+
+			// let's check that our data is actually in the database
+			try (RepositoryResult<Statement> result =
+						 conn.getStatements(null, null, null)) {
+				while (result.hasNext()) {
+					Statement st = result.next();
+				}
+			}
+
             try (TupleQueryResult r = query.evaluate()){
                 // we just iterate over all solutions in the result...
                 System.out.println("Results:");
