@@ -1,29 +1,36 @@
 package org.crspengine;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Set;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.Literal;
-import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.*;
+import org.eclipse.rdf4j.model.impl.LinkedHashModel;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
+import org.eclipse.rdf4j.query.parser.sparql.ast.utility_files.LogicalWindow;
+import org.eclipse.rdf4j.query.parser.sparql.ast.utility_files.StreamInfo;
+import org.eclipse.rdf4j.query.parser.sparql.ast.utility_files.TimeUnit;
+import org.eclipse.rdf4j.query.parser.sparql.ast.utility_files.Window;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
+import org.eclipse.rdf4j.repository.sail.SailTupleQuery;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
 import com.google.gson.JsonArray;
@@ -98,14 +105,13 @@ public class UserInterface {
 	       });
 		
 	}
-	
+
 	private String calculateQuery(String jsonStream, String queryString) {
 		
 		String queryResult = "";
-        ArrayList<InternalGraph> graphStream = new ArrayList<InternalGraph>();
+		ArrayList<InternalGraph> graphStream = new ArrayList<InternalGraph>();
         ValueFactory vf = SimpleValueFactory.getInstance();
-        ModelBuilder builder = new ModelBuilder();
-        
+
 		JsonParser parser = new JsonParser();
         JsonElement jsonTree = parser.parse(jsonStream);
 
@@ -135,6 +141,7 @@ public class UserInterface {
                 // internalise the data from the json graph to internal graph
                 for (Iterator<JsonElement> i = graphs.iterator(); i.hasNext();){
                     JsonElement je = i.next();
+					ModelBuilder builder = new ModelBuilder();
 
                     if (je.isJsonObject()){
                         // extract meta data from graph
@@ -145,7 +152,8 @@ public class UserInterface {
                         if (je.getAsJsonObject().get("@graph").isJsonArray()){
                             JsonArray graphData = je.getAsJsonObject().get("@graph").getAsJsonArray();
 
-                            //iterate through graphData (subgraphs) building a model for each RDF tripple
+							builder = new ModelBuilder();
+							//iterate through graphData (subgraphs) building a model for each RDF tripple
                             for (Iterator<JsonElement> j = graphData.iterator(); j.hasNext();){
                                 JsonElement rdf_tuple = j.next();
 
@@ -182,6 +190,19 @@ public class UserInterface {
         
         /**
          * Query Internal graph streams graphData.
+		 *
+		 * create empty database
+		 *
+		 * parse query
+		 *
+		 * if windowing is used in query
+		 * 	find next window over stream
+		 * 		for graphs in graph stream
+		 * 			if currentGraphTime <= RANGE && currentGraphTime <= STEP
+		 * 				add graph to model
+		 * 				remove graph from stream
+		 *
+		 *
          */
         // Create a new Repository. Here, we choose a database implementation
         // that simply stores everything in main memory.
@@ -190,50 +211,207 @@ public class UserInterface {
 
         // Open a connection to the database
         try (RepositoryConnection conn = db.getConnection()) {
-            // add the graphData models to db
+			// add the graphData models to db
 			conn.add(new ModelBuilder().build()); //populate database with null model
 
 
-            TupleQuery query = conn.prepareTupleQuery(queryString);
+			SailTupleQuery query = (SailTupleQuery) conn.prepareTupleQuery(queryString);
 
-            // filter graph stream list based on window times
+			// filter graph stream list based on window times
+			//This will be moved to another class after refactoring.
 
-            for (Iterator<InternalGraph> i = graphStream.iterator(); i.hasNext(); ){
-				InternalGraph g = i.next();
-				conn.add(g.getGraphData());
-			}
+			//these are temp variables etc to see if it works
+			int RANGE = 0;
+			int STEP = 0;
+			int MAX_WINDOWS, NUM_WINDOWS;
+			String RANGE_UNITS = null;
+			String STEP_UNITS = null;
+			ModelBuilder windowBuilder = null;
+			Model windowModel = null;
+			int boundaryCount = 0;
+			long startStepTime = -1;
+			long startRangeTime = -1;
 
-			// let's check that our data is actually in the database
-			try (RepositoryResult<Statement> result =
-						 conn.getStatements(null, null, null)) {
-				while (result.hasNext()) {
-					Statement st = result.next();
+
+			// while there is still a graph stream to query
+			while (!graphStream.isEmpty()) {
+				/** Calculate Window if required in the query */
+				if (query.getParsedQuery().streamWindow != null) {
+					conn.remove(QueryResults.asModel((conn.getStatements(null, null, null))));
+
+					// initialise window variables
+					for (Iterator<StreamInfo> sit = query.getParsedQuery().streamWindow.iterator(); sit.hasNext(); ) {
+						StreamInfo si = sit.next();
+						LogicalWindow w = (LogicalWindow) si.getWindow();
+
+						RANGE = w.getRangeDescription().getValue();
+						STEP = w.getStepDescription().getValue();
+						RANGE_UNITS = w.getRangeDescription().getTimeUnit().toString().toUpperCase();
+						STEP_UNITS = w.getStepDescription().getTimeUnit().toString().toUpperCase();
+
+						NUM_WINDOWS = RANGE / STEP;
+
+						System.out.println("Range: " + w.getRangeDescription().getValue()
+								+ w.getRangeDescription().getTimeUnit()
+								+ " Step: " + w.getStepDescription().getValue()
+								+ w.getStepDescription().getTimeUnit()
+						);
+					}
+
+					// for each graph in graph stream create window
+					for (int i = 0; i < graphStream.size(); i++) {
+						InternalGraph g = graphStream.get(i);
+
+						// get graph time stamp
+						String currentTimeStampStr = g.getObservedAt();
+						int currentTimeStamp = 0;
+
+						// set format of graph time stamp string
+						SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
+						// get string value required depending on RANGE_UNITS, convert it to int
+						try {
+							Date date = simpleDateFormat.parse(currentTimeStampStr);
+							Calendar c1 = new GregorianCalendar();
+							c1.setTime(date);
+							long ct = c1.getTimeInMillis();
+
+							long dStepTimeMili=0;
+							long dStepTime=0;
+							long dRangeTime=0;
+							long dRangeTimeMili=0;
+
+							//we are at the start of a new window
+							if (startRangeTime == -1){
+								startRangeTime = c1.getTimeInMillis();
+							}
+							if (startStepTime == -1) {
+								startStepTime = c1.getTimeInMillis();
+								conn.add(g.getGraphData());
+							}else{
+
+								/** TODO: THIS CAN BE A FUNCTION RATHER THAN 2 SWITCH STATEMENTS */
+								//STEP difference calculations
+								// The STEP_UNITS define where our window will stop
+								// therefore we have to pull out that unit from our graph time
+								// and then compare it to define the end of our window will end
+								dStepTimeMili = (ct - startStepTime);
+								switch(STEP_UNITS) {
+									case "D":
+										dStepTime = (dStepTimeMili / 1000) /60 /60 /24;
+										break;
+									case "H":
+										dStepTime = (dStepTimeMili / 1000) / 60 /60;
+										break;
+									case "M":
+										dStepTime = (dStepTimeMili / 1000) / 60;
+										break;
+									case "S":
+										dStepTime = (dStepTimeMili / 1000);
+										break;
+								}
+								//RANGE difference calculations
+								// The RANGE_UNITS define where our final window will stop
+								// therefore we have to pull out that unit from our graph time
+								// and then compare it to define the end of our final window will end
+								dRangeTimeMili = (ct - startRangeTime);
+								switch(RANGE_UNITS) {
+									case "D":
+										dRangeTime = ((((dRangeTimeMili / 1000) /60) /60) /24);
+										break;
+									case "H":
+										dRangeTime = (((dRangeTimeMili / 1000) / 60) /60);
+										break;
+									case "M":
+										dRangeTime = ((dRangeTimeMili / 1000) / 60);
+										break;
+									case "S":
+										dRangeTime = (dRangeTimeMili / 1000);
+										break;
+								}
+
+								//we are at the max range
+								if (dRangeTime >= RANGE){
+									//end of window, add window limit graphGraph to database
+									conn.add(g.getGraphData());
+									System.out.println("New Window");
+
+									// remove current window from stream
+									graphStream.subList(0, graphStream.size()).clear();
+
+									// reset starting step time
+									startStepTime = -1;
+									startRangeTime = -1;
+									break;
+								} else if ((dStepTime % STEP) == 0) { //end of the current window
+									//end of window, add window limit graphGraph to database
+									conn.add(g.getGraphData());
+									System.out.println("New Window");
+
+									// remove current window from stream
+									graphStream.subList(0, i+1).clear();
+
+									// reset starting step time
+									startStepTime = -1;
+									break;
+								} else if (graphStream.size()-1 == i){	//end of the graph stream
+									conn.add(g.getGraphData());
+									System.out.println("New Window");
+
+									// remove current window from stream
+									graphStream.subList(0, graphStream.size()).clear();
+
+									// reset starting step time
+									startStepTime = -1;
+									startRangeTime = -1;
+									break;
+								} else {
+									// graph within window add to database
+									conn.add(g.getGraphData());
+								}
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				} else {    // run query over whole graph stream, add all graphData to database
+					for (Iterator<InternalGraph> i = graphStream.iterator(); i.hasNext(); ) {
+						InternalGraph g = i.next();
+						conn.add(g.getGraphData());
+					}
+				}
+
+
+				// check that our data is actually in the database
+				if (!(conn.getStatements(null, null, null).hasNext())) {
+					System.err.println("Error: Empty Database, cannot proceed with query execution");
+				}
+
+				try (TupleQueryResult r = query.evaluate()) {
+					// we just iterate over all solutions in the result...
+					System.out.println("Results:");
+					BindingSet solution = null;
+					Set<String> bindingNames;
+					while (r.hasNext()) {
+						solution = r.next();
+						bindingNames = solution.getBindingNames();
+						Iterator iterator = bindingNames.iterator();
+						String code;
+						while (iterator.hasNext()) {
+							code = (String) iterator.next();
+							queryResult = queryResult + "?" + code + " = " + solution.getValue(code) + "\n";
+						}
+						//System.out.println("?p = " + solution.getValue("p") + "\n" + "?o = " + solution.getValue("o") + "\n");
+					}
+					queryResult = queryResult + "\n-----\n";    // window output divider in output file
+
+				} catch (Exception e) {
+					System.err.println("ERROR");
 				}
 			}
-
-            try (TupleQueryResult r = query.evaluate()){
-                // we just iterate over all solutions in the result...
-                System.out.println("Results:");
-                BindingSet solution = null;
-                Set<String> bindingNames;
-                while (r.hasNext()) {
-                  solution = r.next();
-                  bindingNames = solution.getBindingNames();
-                  Iterator iterator = bindingNames.iterator();
-                  String code;
-                  while (iterator.hasNext())
-                  {
-                	  code = (String) iterator.next();
-                	  queryResult = queryResult + "?"+code+" = "+ solution.getValue(code)+"\n";
-                  }
-                    //System.out.println("?p = " + solution.getValue("p") + "\n" + "?o = " + solution.getValue("o") + "\n");
-                }
-            
-            }catch (Exception e){
-                System.err.println("ERROR");
-            }
-        }
- 
+		} finally {
+        	db.shutDown();
+		}
 		return queryResult;
 	}
 	
@@ -287,7 +465,7 @@ public class UserInterface {
 		file = new File(fileName);
 		fw = new FileWriter(file);
 		output = new BufferedWriter(fw);
-		output.write(text);
+		output.append(text);
 		
 		System.out.println("Done");
 		} catch (IOException e)
