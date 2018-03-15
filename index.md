@@ -1,6 +1,11 @@
 # CRSP Engine
+### Project Status:
+---
+| Area | Status |
+|:------:|:------:|
+|Continious Integration:| [![Build Status](https://travis-ci.org/FraserBrown/CRSP-Engine.svg?branch=master)](https://travis-ci.org/FraserBrown/CRSP-Engine)
 
 ## What is CRSP?
-Our Continuous RSPQL Stream Processing (CRSP) Engine...
+Our Continuous RSPQL Stream Processing (CRSP) Engine 
 
 ## What is RSPQL?
