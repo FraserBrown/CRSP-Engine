@@ -3,11 +3,7 @@
 
 ### Project Status:
 ---
-
-| Area                    |                                                               Status                                                              |
-|-------------------------|:---------------------------------------------------------------------------------------------------------------------------------:|
-| Continuous Integration: | [![Build Status](https://travis-ci.org/FraserBrown/CRSP-Engine.svg?branch=master)](https://travis-ci.org/FraserBrown/CRSP-Engine) |
-{: .custom-class #custom-id}
+* Continuous Integration: [![Build Status](https://travis-ci.org/FraserBrown/CRSP-Engine.svg?branch=master)](https://travis-ci.org/FraserBrown/CRSP-Engine)
 
 ## What is CRSP?
 ---
