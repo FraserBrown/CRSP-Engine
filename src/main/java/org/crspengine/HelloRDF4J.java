@@ -111,7 +111,7 @@ public class HelloRDF4J {
 
 	    	}
 		    }
-    	    System.out.println("CI TESTING"));
+    	    System.out.println("CI TESTING");
 
 		}
 		finally {
