@@ -222,6 +222,8 @@ public class UserInterface {
 
 			//these are temp variables etc to see if it works
 			int RANGE = 0;
+			int ORIGINAL_RANGE = 0;
+			int ORIGINAL_STEP = 0;
 			int STEP = 0;
 			int MAX_WINDOWS, NUM_WINDOWS;
 			String RANGE_UNITS = null;
@@ -245,7 +247,9 @@ public class UserInterface {
 						LogicalWindow w = (LogicalWindow) si.getWindow();
 
 						RANGE = w.getRangeDescription().getValue();
+						ORIGINAL_RANGE = w.getRangeDescription().getValue();
 						STEP = w.getStepDescription().getValue();
+						ORIGINAL_STEP = w.getStepDescription().getValue();
 						RANGE_UNITS = w.getRangeDescription().getTimeUnit().toString().toUpperCase();
 						STEP_UNITS = w.getStepDescription().getTimeUnit().toString().toUpperCase();
 
@@ -261,7 +265,6 @@ public class UserInterface {
 					// for each graph in graph stream create window
 					for (int i = 0; i < graphStream.size(); i++) {
 						InternalGraph g = graphStream.get(i);
-
 						// get graph time stamp
 						String currentTimeStampStr = g.getObservedAt();
 						int currentTimeStamp = 0;
@@ -277,8 +280,6 @@ public class UserInterface {
 							long ct = c1.getTimeInMillis();
 
 							long dStepTimeMili=0;
-							long dStepTime=0;
-							long dRangeTime=0;
 							long dRangeTimeMili=0;
 
 							//we are at the start of a new window
@@ -288,6 +289,7 @@ public class UserInterface {
 							if (startStepTime == -1) {
 								startStepTime = c1.getTimeInMillis();
 								conn.add(g.getGraphData());
+								graphStream.subList(0, i).clear();
 							}else{
 
 								/** TODO: THIS CAN BE A FUNCTION RATHER THAN 2 SWITCH STATEMENTS */
@@ -298,16 +300,16 @@ public class UserInterface {
 								dStepTimeMili = (ct - startStepTime);
 								switch(STEP_UNITS) {
 									case "D":
-										dStepTime = (dStepTimeMili / 1000) /60 /60 /24;
+										STEP = (ORIGINAL_STEP * 60 * 60 * 24) * 1000;
 										break;
 									case "H":
-										dStepTime = (dStepTimeMili / 1000) / 60 /60;
+										STEP = (ORIGINAL_STEP * 60 * 60) * 1000;
 										break;
 									case "M":
-										dStepTime = (dStepTimeMili / 1000) / 60;
+										STEP = (ORIGINAL_STEP * 60) * 1000;
 										break;
 									case "S":
-										dStepTime = (dStepTimeMili / 1000);
+										STEP = (ORIGINAL_STEP * 1000);
 										break;
 								}
 								//RANGE difference calculations
@@ -317,24 +319,23 @@ public class UserInterface {
 								dRangeTimeMili = (ct - startRangeTime);
 								switch(RANGE_UNITS) {
 									case "D":
-										dRangeTime = ((((dRangeTimeMili / 1000) /60) /60) /24);
+										RANGE = (ORIGINAL_RANGE * 60 * 60 * 24) * 1000;
 										break;
 									case "H":
-										dRangeTime = (((dRangeTimeMili / 1000) / 60) /60);
+										RANGE = (ORIGINAL_RANGE * 60 * 60) * 1000;
 										break;
 									case "M":
-										dRangeTime = ((dRangeTimeMili / 1000) / 60);
+										RANGE = (ORIGINAL_RANGE * 60) * 1000;
 										break;
 									case "S":
-										dRangeTime = (dRangeTimeMili / 1000);
+										RANGE = (ORIGINAL_RANGE * 1000);
 										break;
 								}
 
-								//we are at the max range
-								if (dRangeTime >= RANGE){
+								
+								if (dRangeTimeMili == RANGE && dStepTimeMili <= STEP ){
 									//end of window, add window limit graphGraph to database
 									conn.add(g.getGraphData());
-									System.out.println("New Window");
 
 									// remove current window from stream
 									graphStream.subList(0, graphStream.size()).clear();
@@ -343,7 +344,21 @@ public class UserInterface {
 									startStepTime = -1;
 									startRangeTime = -1;
 									break;
-								} else if ((dStepTime % STEP) == 0) { //end of the current window
+								}
+								//we are at the max range
+								else if (dRangeTimeMili > RANGE){
+									//end of window, add window limit graphGraph to database
+									//conn.add(g.getGraphData());
+									//System.out.println("New Window");
+
+									// remove current window from stream
+									graphStream.subList(0, graphStream.size()).clear();
+
+									// reset starting step time
+									startStepTime = -1;
+									startRangeTime = -1;
+									break;
+								} else if (dStepTimeMili <= STEP) { //end of the current window
 									//end of window, add window limit graphGraph to database
 									conn.add(g.getGraphData());
 									System.out.println("New Window");
@@ -351,6 +366,13 @@ public class UserInterface {
 									// remove current window from stream
 									graphStream.subList(0, i+1).clear();
 
+									// reset starting step time
+									startStepTime = -1;				
+									break;
+								} else if (dStepTimeMili >= STEP) { //outside of the current window
+									// remove current window from stream
+									graphStream.subList(0, i).clear();
+									
 									// reset starting step time
 									startStepTime = -1;
 									break;
