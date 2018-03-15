@@ -111,6 +111,8 @@ public class HelloRDF4J {
 
 	    	}
 		    }
+    	    System.out.println("CI TESTING"));
+
 		}
 		finally {
 		    // Before our program exits, make sure the database is properly shut down.
