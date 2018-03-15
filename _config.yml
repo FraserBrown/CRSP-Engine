@@ -2,5 +2,3 @@ theme: jekyll-theme-architect
 title: CRSP Engine
 description: Continuous RSPQL Stream Processing (CRSP) Engine
 markdown: kramdown
-redcarpet:
-  extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "tables", "with_toc_data"]
