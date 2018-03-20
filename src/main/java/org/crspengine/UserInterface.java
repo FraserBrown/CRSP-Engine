@@ -1,42 +1,25 @@
 package org.crspengine;
 
 import java.io.*;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
-import java.time.Period;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.rdf4j.model.*;
-import org.eclipse.rdf4j.model.impl.LinkedHashModel;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryResults;
-import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.parser.sparql.ast.utility_files.LogicalWindow;
 import org.eclipse.rdf4j.query.parser.sparql.ast.utility_files.StreamInfo;
-import org.eclipse.rdf4j.query.parser.sparql.ast.utility_files.TimeUnit;
-import org.eclipse.rdf4j.query.parser.sparql.ast.utility_files.Window;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.repository.sail.SailTupleQuery;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 
 public class UserInterface {
@@ -106,88 +89,22 @@ public class UserInterface {
 		
 	}
 
-	private String calculateQuery(String jsonStream, String queryString) {
+	private String calculateQuery(String jsonString, String queryString) {
 		
 		String queryResult = "";
 		ArrayList<InternalGraph> graphStream = new ArrayList<InternalGraph>();
         ValueFactory vf = SimpleValueFactory.getInstance();
 
-		JsonParser parser = new JsonParser();
-        JsonElement jsonTree = parser.parse(jsonStream);
+        //Create JsonRDFGraphParser object
+        JsonRDFGraphParser jsonRDFGraphParser = new JsonRDFGraphParser(jsonString);
 
-        if (jsonTree.isJsonObject()) {
-            JsonObject jo = jsonTree.getAsJsonObject();
+        // create internal json data structure from json string
+        jsonRDFGraphParser.parseJsonString();
 
-            JsonElement context = jo.getAsJsonObject("@context");
-            
-            //Find @vocab primitive, eg. http://www.example.org/data-vocabulary#
-            String namespace_ex = jo.getAsJsonObject("@context").getAsJsonPrimitive("@vocab").getAsString();
-            //Make sure url ends with a /
-            if(namespace_ex.matches(".*//.*/.*")) {
-	            //Substring to get the only the server name, eg. http://www.example.org/
-	            namespace_ex = namespace_ex.substring(0, StringUtils.ordinalIndexOf(namespace_ex, "/", 3)+1);
-	            //Substring to remove www. eg. http://example.org/
-	            namespace_ex = namespace_ex.replaceFirst(Pattern.quote("www."), "");
-            }
-            else
-            {
-            	throw new java.lang.RuntimeException("The @vocab namespace must end with a /");
-            }
-            
-            // look at graph streams and pull out either sing json graph object or array of graphs
-            if (jo.get("@graph").isJsonArray()){
-                JsonArray graphs = jo.getAsJsonArray("@graph");
-
-                // internalise the data from the json graph to internal graph
-                for (Iterator<JsonElement> i = graphs.iterator(); i.hasNext();){
-                    JsonElement je = i.next();
-					ModelBuilder builder = new ModelBuilder();
-
-                    if (je.isJsonObject()){
-                        // extract meta data from graph
-                        String graph_id = je.getAsJsonObject().getAsJsonPrimitive("@id").getAsString();
-                        String observedAt = je.getAsJsonObject().getAsJsonPrimitive("observedAt").getAsString();
-
-                        // is there more than one instance of RDF data?
-                        if (je.getAsJsonObject().get("@graph").isJsonArray()){
-                            JsonArray graphData = je.getAsJsonObject().get("@graph").getAsJsonArray();
-
-							builder = new ModelBuilder();
-							//iterate through graphData (subgraphs) building a model for each RDF tripple
-                            for (Iterator<JsonElement> j = graphData.iterator(); j.hasNext();){
-                                JsonElement rdf_tuple = j.next();
-
-                                //extract tuple information
-                                IRI subject = vf.createIRI(
-                                        namespace_ex,
-                                        rdf_tuple.getAsJsonObject().getAsJsonPrimitive("@id").getAsString());
-                                IRI predicate = vf.createIRI(namespace_ex,"hasTemp"); // TODO: generate predicate from namespaces currently possible
-                                Literal object = vf.createLiteral(rdf_tuple.getAsJsonObject().getAsJsonPrimitive("hasTemp").getAsString());
-
-                                //create graph tuple for this
-                                builder.defaultGraph().subject(subject).add(predicate, object);
-                            }
-                        }
-
-                        // build sub graph data into model
-                        Model model = builder.build();
-
-                        //create internal graph
-                        InternalGraph gr = new InternalGraph();
-                        gr.setObservedAt(observedAt);
-                        gr.setGraphID(graph_id);
-                        gr.setGraphData(model);
-
-                        //add internal graph to list graphStream
-                        graphStream.add(gr);
-                    }
-                }
-            } else if (jo.get("@graph").isJsonObject()){
-                JsonElement graphs = jo.getAsJsonObject("@graph");
-            }
-        }
+        // convert internal json tree into graph stream - arraylist of internalgraphs.
+        jsonRDFGraphParser.jsonToInternalGraphStream(graphStream);
         
-        
+
         /**
          * Query Internal graph streams graphData.
 		 *
@@ -358,7 +275,7 @@ public class UserInterface {
 									startStepTime = -1;
 									startRangeTime = -1;
 									break;
-								} else if (dStepTimeMili <= STEP) { //end of the current window
+								} else if (dStepTimeMili == STEP) { //end of the current window
 									//end of window, add window limit graphGraph to database
 									conn.add(g.getGraphData());
 									System.out.println("New Window");

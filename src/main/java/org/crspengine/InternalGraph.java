@@ -17,11 +17,17 @@ public class InternalGraph {
 
 
     public InternalGraph() {
-        this.vf = SimpleValueFactory.getInstance();
         this.ns = new ArrayList<String>();
         this.graphID = null;
         this.observedAt = null;
         this.graphData = null;
+    }
+
+    public InternalGraph(ArrayList<String> ns, String graphID, String observedAt, Model graphData) {
+        this.ns = ns;
+        this.observedAt = observedAt;
+        this.graphData = graphData;
+        this.graphID = graphID;
     }
 
     public void setObservedAt(String observedAt) {
