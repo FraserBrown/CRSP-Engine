@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.junit.jupiter.api.*;
 
 
-public class testInternalGraphStructure {
+public class InternalGraphStructureTest {
 
     private InternalGraph ig;
     @Before
