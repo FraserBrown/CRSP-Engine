@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0438830c-d7bf-4c23-a2ee-43a3d1c102c5" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
-      <change beforePath="$PROJECT_DIR$/tests/testInternalGraphStructure.java" afterPath="$PROJECT_DIR$/tests/InternalGraphStructureTest.java" />
-    </list>
+    <list default="true" id="0438830c-d7bf-4c23-a2ee-43a3d1c102c5" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -51,8 +47,8 @@
       <file leaf-file-name="InternalGraphStructureTest.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests/InternalGraphStructureTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="270">
-              <caret line="18" column="0" lean-forward="true" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+            <state relative-caret-position="315">
+              <caret line="21" column="40" lean-forward="true" selection-start-line="21" selection-start-column="40" selection-end-line="21" selection-end-column="40" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#375#376#0" expanded="true" />
@@ -528,19 +524,19 @@
       <workItem from="1520948182192" duration="23783000" />
       <workItem from="1521145223380" duration="3620000" />
       <workItem from="1521487775494" duration="3661000" />
-      <workItem from="1521558999833" duration="2561000" />
+      <workItem from="1521558999833" duration="2751000" />
     </task>
     <servers />
   </component>
   <component name="TestHistory">
+    <history-entry file="InternalGraphStructureTest - 2018.03.20 at 16h 30m 45s.xml">
+      <configuration name="InternalGraphStructureTest" configurationId="JUnit" />
+    </history-entry>
     <history-entry file="testInternalGraphStructure - 2018.03.20 at 15h 53m 20s.xml">
       <configuration name="testInternalGraphStructure" configurationId="JUnit" />
     </history-entry>
     <history-entry file="testInternalGraphStructure - 2018.03.20 at 15h 53m 38s.xml">
       <configuration name="testInternalGraphStructure" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="testInternalGraphStructure_canSetUpInternalGraph - 2018.03.20 at 15h 21m 11s.xml">
-      <configuration name="testInternalGraphStructure.canSetUpInternalGraph" configurationId="JUnit" />
     </history-entry>
     <history-entry file="testInternalGraphStructure_canSetUpInternalGraph - 2018.03.20 at 15h 22m 09s.xml">
       <configuration name="testInternalGraphStructure.canSetUpInternalGraph" configurationId="JUnit" />
@@ -565,7 +561,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="96284000" />
+    <option name="totallyTimeSpent" value="96474000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1680" height="1023" extended-state="0" />
@@ -1036,8 +1032,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/InternalGraphStructureTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" column="0" lean-forward="true" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+        <state relative-caret-position="315">
+          <caret line="21" column="40" lean-forward="true" selection-start-line="21" selection-start-column="40" selection-end-line="21" selection-end-column="40" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#375#376#0" expanded="true" />
