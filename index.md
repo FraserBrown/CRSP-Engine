@@ -58,9 +58,9 @@ Apple (subject) sells (predicate) IPhone (object)
 
 In-depth information on RDF can be found at the following links:
 
-https://www.w3.org/RDF/
+[https://www.w3.org/RDF/](https://www.w3.org/RDF/)
 
-https://www.w3.org/TR/rdf-concepts/
+[https://www.w3.org/TR/rdf-concepts/](https://www.w3.org/TR/rdf-concepts/)
 
 ## What are RDF Streams?
 ---
@@ -91,6 +91,6 @@ WHERE {
 
 More information on RSP-QL can be found its GitHub page and the W3C Community Group on RDF Stream Processing website:
 
-https://github.com/streamreasoning/RSP-QL
+[https://github.com/streamreasoning/RSP-QL](https://github.com/streamreasoning/RSP-QL)
 
-https://www.w3.org/community/rsp/
+[https://www.w3.org/community/rsp/](https://www.w3.org/community/rsp/)
