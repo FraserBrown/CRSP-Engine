@@ -37,7 +37,7 @@ public class HelloRDF4J {
 		    queryString += "PREFIX ns1: <Person> \n";
 		    queryString += "PREFIX ex: <http://example.org/> \n";
 		    queryString += "SELECT ?s (count(?s) as ?countUsers) \n";
-		    queryString += "FROM NAMED WINDOW :wind ON s:trips [RANGE PT1H STEP PT1H] \n";
+		    queryString += "FROM NAMED WINDOW :win ON s:trips [RANGE PT1H STEP PT1H] \n";
 		    queryString += "WHERE { \n";
 		    queryString += "WINDOW :win { \n";
 		    queryString += "    ?s a <" + FOAF.NAMESPACE + "Person> \n";

@@ -1,8 +1,8 @@
 PREFIX ex: <http://example.org/> 
 SELECT ?p ?o
-FROM NAMED WINDOW :wind ON s:example [RANGE PT10m STEP PT5m]
+FROM NAMED WINDOW :win ON s:example [RANGE PT10m STEP PT5m]
 WHERE { 
-WINDOW :win { 
-	ex:Paris ?p ?o
-}
+	WINDOW :win { 
+		ex:Paris ?p ?o
+	}
 }

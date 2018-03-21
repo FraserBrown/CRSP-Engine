@@ -1,26 +1,17 @@
 package org.crspengine;
 
 import java.io.*;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-import org.eclipse.rdf4j.model.*;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
-import org.eclipse.rdf4j.query.BindingSet;
-import org.eclipse.rdf4j.query.QueryResults;
-import org.eclipse.rdf4j.query.TupleQueryResult;
-import org.eclipse.rdf4j.query.parser.sparql.ast.utility_files.LogicalWindow;
-import org.eclipse.rdf4j.query.parser.sparql.ast.utility_files.StreamInfo;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.repository.sail.SailTupleQuery;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
-
 
 public class UserInterface {
 
@@ -93,7 +84,6 @@ public class UserInterface {
 		
 		String queryResult = "";
 		ArrayList<InternalGraph> graphStream = new ArrayList<InternalGraph>();
-        ValueFactory vf = SimpleValueFactory.getInstance();
 
         //Create JsonRDFGraphParser object
         JsonRDFGraphParser jsonRDFGraphParser = new JsonRDFGraphParser(jsonString);
@@ -128,226 +118,21 @@ public class UserInterface {
 
         // Open a connection to the database
         try (RepositoryConnection conn = db.getConnection()) {
-			// add the graphData models to db
-			conn.add(new ModelBuilder().build()); //populate database with null model
+        	//Populate database with a null model. This allows us to parse the query for syntax errors before executing it over a given stream.
+			conn.add(new ModelBuilder().build()); 
 
+			//Create RSPQL parser object
+	        RSPQLQueryParser rspqlQueryParser = new RSPQLQueryParser();
+	        
+	        //Parse the query for correct RSPQL syntax.
+	        SailTupleQuery query = rspqlQueryParser.parseRSPQLQuery(conn, queryString);
 
-			SailTupleQuery query = (SailTupleQuery) conn.prepareTupleQuery(queryString);
+			//Create query evaluator object
+	        RSPQLQueryEvaluator rspqlQueryEvaluator = new RSPQLQueryEvaluator();
+	        
+	        //Evaluate the RSPQL query over the RDF graph stream
+	        queryResult += rspqlQueryEvaluator.evaluteQuery(conn, query, graphStream);
 
-			// filter graph stream list based on window times
-			//This will be moved to another class after refactoring.
-
-			//these are temp variables etc to see if it works
-			int RANGE = 0;
-			int ORIGINAL_RANGE = 0;
-			int ORIGINAL_STEP = 0;
-			int STEP = 0;
-			int MAX_WINDOWS, NUM_WINDOWS;
-			String RANGE_UNITS = null;
-			String STEP_UNITS = null;
-			ModelBuilder windowBuilder = null;
-			Model windowModel = null;
-			int boundaryCount = 0;
-			long startStepTime = -1;
-			long startRangeTime = -1;
-
-
-			// while there is still a graph stream to query
-			while (!graphStream.isEmpty()) {
-				/** Calculate Window if required in the query */
-				if (query.getParsedQuery().streamWindow != null) {
-					conn.remove(QueryResults.asModel((conn.getStatements(null, null, null))));
-
-					// initialise window variables
-					for (Iterator<StreamInfo> sit = query.getParsedQuery().streamWindow.iterator(); sit.hasNext(); ) {
-						StreamInfo si = sit.next();
-						LogicalWindow w = (LogicalWindow) si.getWindow();
-
-						RANGE = w.getRangeDescription().getValue();
-						ORIGINAL_RANGE = w.getRangeDescription().getValue();
-						STEP = w.getStepDescription().getValue();
-						ORIGINAL_STEP = w.getStepDescription().getValue();
-						RANGE_UNITS = w.getRangeDescription().getTimeUnit().toString().toUpperCase();
-						STEP_UNITS = w.getStepDescription().getTimeUnit().toString().toUpperCase();
-
-						NUM_WINDOWS = RANGE / STEP;
-
-						System.out.println("Range: " + w.getRangeDescription().getValue()
-								+ w.getRangeDescription().getTimeUnit()
-								+ " Step: " + w.getStepDescription().getValue()
-								+ w.getStepDescription().getTimeUnit()
-						);
-					}
-
-					// for each graph in graph stream create window
-					for (int i = 0; i < graphStream.size(); i++) {
-						InternalGraph g = graphStream.get(i);
-						// get graph time stamp
-						String currentTimeStampStr = g.getObservedAt();
-						int currentTimeStamp = 0;
-
-						// set format of graph time stamp string
-						SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-
-						// get string value required depending on RANGE_UNITS, convert it to int
-						try {
-							Date date = simpleDateFormat.parse(currentTimeStampStr);
-							Calendar c1 = new GregorianCalendar();
-							c1.setTime(date);
-							long ct = c1.getTimeInMillis();
-
-							long dStepTimeMili=0;
-							long dRangeTimeMili=0;
-
-							//we are at the start of a new window
-							if (startRangeTime == -1){
-								startRangeTime = c1.getTimeInMillis();
-							}
-							if (startStepTime == -1) {
-								startStepTime = c1.getTimeInMillis();
-								conn.add(g.getGraphData());
-								graphStream.subList(0, i).clear();
-							}else{
-
-								/** TODO: THIS CAN BE A FUNCTION RATHER THAN 2 SWITCH STATEMENTS */
-								//STEP difference calculations
-								// The STEP_UNITS define where our window will stop
-								// therefore we have to pull out that unit from our graph time
-								// and then compare it to define the end of our window will end
-								dStepTimeMili = (ct - startStepTime);
-								switch(STEP_UNITS) {
-									case "D":
-										STEP = (ORIGINAL_STEP * 60 * 60 * 24) * 1000;
-										break;
-									case "H":
-										STEP = (ORIGINAL_STEP * 60 * 60) * 1000;
-										break;
-									case "M":
-										STEP = (ORIGINAL_STEP * 60) * 1000;
-										break;
-									case "S":
-										STEP = (ORIGINAL_STEP * 1000);
-										break;
-								}
-								//RANGE difference calculations
-								// The RANGE_UNITS define where our final window will stop
-								// therefore we have to pull out that unit from our graph time
-								// and then compare it to define the end of our final window will end
-								dRangeTimeMili = (ct - startRangeTime);
-								switch(RANGE_UNITS) {
-									case "D":
-										RANGE = (ORIGINAL_RANGE * 60 * 60 * 24) * 1000;
-										break;
-									case "H":
-										RANGE = (ORIGINAL_RANGE * 60 * 60) * 1000;
-										break;
-									case "M":
-										RANGE = (ORIGINAL_RANGE * 60) * 1000;
-										break;
-									case "S":
-										RANGE = (ORIGINAL_RANGE * 1000);
-										break;
-								}
-
-								
-								if (dRangeTimeMili == RANGE && dStepTimeMili <= STEP ){
-									//end of window, add window limit graphGraph to database
-									conn.add(g.getGraphData());
-
-									// remove current window from stream
-									graphStream.subList(0, graphStream.size()).clear();
-
-									// reset starting step time
-									startStepTime = -1;
-									startRangeTime = -1;
-									break;
-								}
-								//we are at the max range
-								else if (dRangeTimeMili > RANGE){
-									//end of window, add window limit graphGraph to database
-									//conn.add(g.getGraphData());
-									//System.out.println("New Window");
-
-									// remove current window from stream
-									graphStream.subList(0, graphStream.size()).clear();
-
-									// reset starting step time
-									startStepTime = -1;
-									startRangeTime = -1;
-									break;
-								} else if (dStepTimeMili == STEP) { //end of the current window
-									//end of window, add window limit graphGraph to database
-									conn.add(g.getGraphData());
-									System.out.println("New Window");
-
-									// remove current window from stream
-									graphStream.subList(0, i+1).clear();
-
-									// reset starting step time
-									startStepTime = -1;				
-									break;
-								} else if (dStepTimeMili >= STEP) { //outside of the current window
-									// remove current window from stream
-									graphStream.subList(0, i).clear();
-									
-									// reset starting step time
-									startStepTime = -1;
-									break;
-								} else if (graphStream.size()-1 == i){	//end of the graph stream
-									conn.add(g.getGraphData());
-									System.out.println("New Window");
-
-									// remove current window from stream
-									graphStream.subList(0, graphStream.size()).clear();
-
-									// reset starting step time
-									startStepTime = -1;
-									startRangeTime = -1;
-									break;
-								} else {
-									// graph within window add to database
-									conn.add(g.getGraphData());
-								}
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-				} else {    // run query over whole graph stream, add all graphData to database
-					for (Iterator<InternalGraph> i = graphStream.iterator(); i.hasNext(); ) {
-						InternalGraph g = i.next();
-						conn.add(g.getGraphData());
-					}
-				}
-
-
-				// check that our data is actually in the database
-				if (!(conn.getStatements(null, null, null).hasNext())) {
-					System.err.println("Error: Empty Database, cannot proceed with query execution");
-				}
-
-				try (TupleQueryResult r = query.evaluate()) {
-					// we just iterate over all solutions in the result...
-					System.out.println("Results:");
-					BindingSet solution = null;
-					Set<String> bindingNames;
-					while (r.hasNext()) {
-						solution = r.next();
-						bindingNames = solution.getBindingNames();
-						Iterator iterator = bindingNames.iterator();
-						String code;
-						while (iterator.hasNext()) {
-							code = (String) iterator.next();
-							queryResult = queryResult + "?" + code + " = " + solution.getValue(code) + "\n";
-						}
-						//System.out.println("?p = " + solution.getValue("p") + "\n" + "?o = " + solution.getValue("o") + "\n");
-					}
-					queryResult = queryResult + "\n-----\n";    // window output divider in output file
-
-				} catch (Exception e) {
-					System.err.println("ERROR");
-				}
-			}
 		} finally {
         	db.shutDown();
 		}

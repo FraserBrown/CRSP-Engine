@@ -131,8 +131,6 @@ public class JsonRDFGraphParser {
     }
 
     public void extractGraphContextFromJson(JsonObject jo){
-        JsonElement context = jo.getAsJsonObject("@context");
-
         //Find @vocab primitive, eg. http://www.example.org/data-vocabulary#
         String namespace_ex = jo.getAsJsonObject("@context").getAsJsonPrimitive("@vocab").getAsString();
         //Make sure url ends with a /
