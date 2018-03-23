@@ -91,7 +91,7 @@ Your specified output file should be populated with results.
 
 ## Contributing
 
-### Naming Convention
+### Git Branch Naming Convention
 Depending on the type of contribution you are making please name your branch with one of the following tags in this format (TAG/your_feature_name)
 - feature
 - hotfix
@@ -119,14 +119,19 @@ $ git checkout -b your_tag/your_branch_name
 4. When development is complete create a pull request
 
 
-## Development Environment Setup
+### Development Environment
+#### Packages used in this project
+* [RDF4J](http://rdf4j.org/) - Framework for processing and handling RDF data
+* [GSON v2.3.1](https://github.com/google/gson) - JSON to Java Object Parser 
+* [JUnit v4.12](https://junit.org/junit4/) - Testing Framework
+* [TravisCi](https://travis-ci.org/) - Continuious Integration software used in the git repository.
 
-### Set up Eclipse
-#### Pre-Requisites:
+#### Set up Eclipse
+##### Pre-Requisites:
 1. Install JDK1.8 as shown in [Installing Java JDK 1.8 on Linux](#Installing-Java-JDK-1.8-on-Linux).
 2. ``Clone`` the repository and set you your new ``branch`` as per [contributers setting up git](#Setting-up-git).
 3. Install Eclipse
-#### Import Poject into Eclipse:
+##### Import Poject into Eclipse:
 1. ``Open Eclipse`` and enter the ``path`` to the parent diretory of the previously cloned repository.
 2. Once eclipse has started select ``File --> Import``
 3. Select ``maven --> Existing Maven Projects`` then click ``next``
@@ -136,10 +141,25 @@ $ git checkout -b your_tag/your_branch_name
 
 The project should import dependencies will be downloaded through the pom file and maven in the background. You will can now start developing.
 
+## Testing Environment
+The testing environment in this project is done through JUnit, tests can be found in: ``CRSP-Engine/src/test/java/``. Our test naming scheme uses the following format; ``*Test.java`` where ``*`` is the name of the feature or system element you wish to test.
+Some examples include:
+* RSPQLParseTest.java
 
-## Meta
-Distributed under the XYZ license. See ``LICENSE`` for more information.
+To run all the test in to perform regression testing (testing your new feature has not broken any existing functionality):
+1. Open Eclipse or your IDE of choice
+2. In the ``project pane`` (on the left hand side) right click on the directory ``test/java`` then select ``Run All Tests``.
+
+## Continious Integration
+Out git repository uses continiuous integration in the form of TravisCI. This runs a clean build and any tests in the ``src/test/java/`` directory when ever a new change is pushed to a branch.
+![](figures/travisci-branchpage.png)
+
 
 <!-- Markdown link & img dfn's -->
 [java-jdk-dl]: http://www.oracle.com/technetwork/pt/java/javase/downloads/jdk8-downloads-2133151.html
 [json-graph-stream]:https://raw.githubusercontent.com/streamreasoning/RSP-QL/gh-pages/Example_RDF_Streams/BGN_Location_TempC_Minute_Unioned.json
+
+## List of Current Contributers:
+* [Fraser Brown](https://github.com/FraserBrown)
+* [Adam Dalley](https://github.com/adam0629)
+* [Teodor Mihai](https://github.com/Mihaiteodor95)
