@@ -106,19 +106,35 @@ $ git checkout dev
 
 2. Create new ``branch`` (example creates a *feature* branch)
 ```sh
-$ git checkout -b feature/new_feature dev
+$ git checkout -b your_tag/your_branch_name
 ```
 
 3. Develop your code, commit code, and push changes to your new branch
 
+>**NOTE:** Your first push of your to your branch with new changes will have to be in the following format:
+>```sh
+>git push -u origin your_tag/your_branch_name
+>```
 
 4. When development is complete create a pull request
 
 
 ## Development Environment Setup
-Install JDK1.8 as shown in [Installing Java JDK 1.8 on Linux](#Installing-Java-JDK-1.8-on-Linux).
 
 ### Set up Eclipse
+#### Pre-Requisites:
+1. Install JDK1.8 as shown in [Installing Java JDK 1.8 on Linux](#Installing-Java-JDK-1.8-on-Linux).
+2. ``Clone`` the repository and set you your new ``branch`` as per [contributers setting up git](#Setting-up-git).
+3. Install Eclipse
+#### Import Poject into Eclipse:
+1. ``Open Eclipse`` and enter the ``path`` to the parent diretory of the previously cloned repository.
+2. Once eclipse has started select ``File --> Import``
+3. Select ``maven --> Existing Maven Projects`` then click ``next``
+    ![](figures/eclipse-maven-projsetup.png)
+4. Browse to the newly created project, select the pom file from box, click ``Finish``
+    ![](figures/eclipse-select-maven-projsetup.png)
+
+The project should import dependencies will be downloaded through the pom file and maven in the background. You will can now start developing.
 
 
 ## Meta
