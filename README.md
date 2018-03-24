@@ -8,7 +8,7 @@ Our Continuous RSPQL Stream Processing (CRSP) Engine is a new tool that allows f
 The primary goal for our system is to be able to run any valid RSP-QL query over any valid RDF graph stream and output the correct result. 
 
 [//]: # (Screenshot of program in use)
-![](header.png)
+<img src="figures/header.png" alt="" style="width: 50%;"/>
 
 ## Installation Dependancy Prerequisites:
 * Java version: 1.8 - below we will show how to install java 1.8 jdk on Linux.
@@ -75,7 +75,7 @@ java -jar out/artifacts/crsp_engine_jar/crsp-engine.jar
 
 You should see the following:
 
-![](figures/crsp-gui.png)
+<img src="figures/crsp-gui.png" alt="" style="width: 50%;"/>
 
 2. Create input and output files:
 
@@ -97,6 +97,12 @@ Depending on the type of contribution you are making please name your branch wit
 - hotfix
 - bugfix
 
+### Git Project Workflow
+This project uses a git-branch based workflow, we have 3 main branches
+* ``master`` - This holds stable code that are treated as releases.
+* ``dev`` - This holds current development build, all development bugs, features and hotfixes are branched from ``dev``
+* ``gh-pages`` - Source code for our github pages website
+
 ### Setting Up Git
 1. Clone our code, and checkout our dev branch
 ```sh
@@ -104,9 +110,9 @@ $ git clone https://github.com/FraserBrown/CRSP-Engine.git
 $ git checkout dev
 ```
 
-2. Create new ``branch``
+2. Create new ``branch`` from the ``dev`` branch
 ```sh
-$ git checkout -b your_tag/your_branch_name
+$ git checkout -b your_tag/your_branch_name dev
 ```
 
 3. Develop your code, commit code, and push changes to your new branch
@@ -117,7 +123,11 @@ $ git checkout -b your_tag/your_branch_name
 >```
 
 4. When development is complete create a pull request
-
+    * Select `` New pull request`` on your newly developed branch from the ``branches`` tab
+        <img src="figures/pull-request1.png" alt="pull request 2" style="width: 80%;"/>
+    * Select ``base:dev`` as the branch you wish to eventually ``merge`` to and fill out the form details, pressing ``Create pull request`` when finished.
+        <img src="figures/pull-request2.png" alt="pull request 2" style="width: 80%;"/>
+    * Your branch will be reviewed by the maintainers.
 
 ### Development Environment
 #### Packages used in this project
@@ -136,9 +146,12 @@ The below packages will be installed through maven automatically for you:
 1. ``Open Eclipse`` and enter the ``path`` to the parent diretory of the previously cloned repository.
 2. Once eclipse has started select ``File --> Import``
 3. Select ``maven --> Existing Maven Projects`` then click ``next``
-    ![](figures/eclipse-maven-projsetup.png)
+
+    <img src="figures/eclipse-maven-projsetup.png" alt="" style="width: 50%;"/>
+
 4. Browse to the newly created project, select the pom file from box, click ``Finish``
-    ![](figures/eclipse-select-maven-projsetup.png)
+
+    <img src="figures/eclipse-select-maven-projsetup.png" alt="" style="width: 50%;"/>
 
 The project should import dependencies will be downloaded through the pom file and maven in the background. You will can now start developing.
 
@@ -153,7 +166,7 @@ To run all the test in to perform regression testing (testing your new feature h
 
 ## Continious Integration
 Out git repository uses continiuous integration in the form of TravisCI. This runs a clean build and any tests in the ``src/test/java/`` directory when ever a new change is pushed to a branch.
-![](figures/travisci-branchpage.png)
+<img src="figures/travisci-branchpage.png" alt="" style="width: 80%;"/>
 
 
 <!-- Markdown link & img dfn's -->
