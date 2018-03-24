@@ -85,22 +85,22 @@ public class UserInterface {
 		
 		//Initialize the main frame and set its parameteres
 		frame = new JFrame();
-		frame.setBounds(100, 100, 347, 803);
+		frame.setBounds(100, 100, 455, 803);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
 		//Initialize the jSon label and add it to the frame.
 		lblJson = new JLabel("JSon");
-		lblJson.setBounds(22, 11, 109, 24);
+		lblJson.setBounds(22, 11, 175, 24);
 		frame.getContentPane().add(lblJson);
 		
 		//Initialize the 2 radio buttons and add them to the frame
 		rdbtnQueryFile = new JRadioButton("Query File");
-		rdbtnQueryFile.setBounds(22, 53, 109, 24);
+		rdbtnQueryFile.setBounds(22, 53, 175, 24);
 		frame.getContentPane().add(rdbtnQueryFile);
 		
 		rdbtnQueryString = new JRadioButton("Query String");
-		rdbtnQueryString.setBounds(22, 91, 109, 23);
+		rdbtnQueryString.setBounds(22, 91, 175, 23);
 		frame.getContentPane().add(rdbtnQueryString);
 		
 		//Add the 2 radio buttons to the same button group
@@ -156,13 +156,13 @@ public class UserInterface {
 		//Initialize the label for the output file and add it to the frame
 		lblQueryOutputFile = new JLabel("Query Output File");
 		lblQueryOutputFile.setHorizontalAlignment(SwingConstants.CENTER);
-		lblQueryOutputFile.setBounds(22, 319, 109, 21);
+		lblQueryOutputFile.setBounds(22, 319, 175, 21);
 		frame.getContentPane().add(lblQueryOutputFile);
 		
 		//Initialize the text field for the json file input	and add it to the frame	
 		jsonInputTextField = new JTextField();
 		jsonInputTextField.setColumns(10);
-		jsonInputTextField.setBounds(141, 13, 169, 24);
+		jsonInputTextField.setBounds(207, 11, 222, 24);
 		frame.getContentPane().add(jsonInputTextField);
 		jsonInputTextField.setText("test.json");
 
@@ -170,20 +170,20 @@ public class UserInterface {
 		queryInputTextField = new JTextField();
 		queryInputTextField.setText("query.txt");
 		queryInputTextField.setColumns(10);
-		queryInputTextField.setBounds(141, 53, 169, 24);
+		queryInputTextField.setBounds(207, 53, 222, 24);
 		frame.getContentPane().add(queryInputTextField);
 		queryInputTextField.setEditable(false);
 		
 		//Initialize the text field for the query output file and add it to the frame
 		queryOutputTextField = new JTextField();
-		queryOutputTextField.setBounds(141, 316, 169, 24);
+		queryOutputTextField.setBounds(207, 317, 222, 24);
 		frame.getContentPane().add(queryOutputTextField);
 		queryOutputTextField.setColumns(10);
 		queryOutputTextField.setText("output.txt");
 		
 		//Initialize the button "Process Query", and add it to the frame
 		btnNewButton = new JButton("Process Query");
-		btnNewButton.setBounds(22, 362, 288, 24);
+		btnNewButton.setBounds(22, 362, 407, 24);
 		frame.getContentPane().add(btnNewButton);
 		
 		//Initialize the "Query Results" label and add it to the frame
@@ -194,7 +194,7 @@ public class UserInterface {
 		
 		//Initialize the "Query Results" scroll pane and add it to the frame
 		queryResultsScrollPane = new ScrollPane();
-		queryResultsScrollPane.setBounds(22, 417, 288, 324);
+		queryResultsScrollPane.setBounds(22, 417, 407, 324);
 		frame.getContentPane().add(queryResultsScrollPane);
 		
 		//Initialize the "Query Results" text pane and add it to the scroll pane. This way the text pane becomes scrollable. Also make it not editable
@@ -205,7 +205,7 @@ public class UserInterface {
 		
 		//Initialize the "Query Input" scroll pane and add it to the frame
 		queryInputScrollPane = new ScrollPane();
-		queryInputScrollPane.setBounds(22, 120, 288, 190);
+		queryInputScrollPane.setBounds(22, 120, 407, 190);
 		frame.getContentPane().add(queryInputScrollPane);
 		
 		//Initialize the "Query Input" text pane and add it to the scroll pane. This way the text pane becomes scrollable.
