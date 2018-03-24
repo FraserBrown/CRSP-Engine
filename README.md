@@ -11,7 +11,7 @@ The primary goal for our system is to be able to run any valid RSP-QL query over
 ![](header.png)
 
 ## Installation Dependancy Prerequisites:
-* Java version: 1.8
+* Java version: 1.8 - below we will show how to install java 1.8 jdk on Linux.
 
 ### Installing Java JDK 1.8 on Linux
 Create java folder in opt and make it your working directory
@@ -104,7 +104,7 @@ $ git clone https://github.com/FraserBrown/CRSP-Engine.git
 $ git checkout dev
 ```
 
-2. Create new ``branch`` (example creates a *feature* branch)
+2. Create new ``branch``
 ```sh
 $ git checkout -b your_tag/your_branch_name
 ```
@@ -121,6 +121,7 @@ $ git checkout -b your_tag/your_branch_name
 
 ### Development Environment
 #### Packages used in this project
+The below packages will be installed through maven automatically for you:
 * [RDF4J](http://rdf4j.org/) - Framework for processing and handling RDF data
 * [GSON v2.3.1](https://github.com/google/gson) - JSON to Java Object Parser 
 * [JUnit v4.12](https://junit.org/junit4/) - Testing Framework
