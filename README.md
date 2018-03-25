@@ -77,17 +77,21 @@ You should see the following:
 
 <img src="figures/crsp-gui.png" alt="" style="width: 50%;"/>
 
-2. Create input and output files:
+2. Please specify a .json file that contains the json structure you want. The json file should be stored in your project folder.
 
-Using text files the our system can parse and output data:
-* JSON Graph Streams in JSON Format [json stream example][json-graph-stream]
-* RSPQL Queries [example RSPQL query](query.txt)
-* Output Query Results into an output text file.
+<img src="figures/jsonSource.png" alt="" style="width: 50%;"/> 
 
-3. Enter their file paths into the relevent text boxes
+3. For the query input you have 2 options :
+	- specify the text file containing the query. The text file should be stored in your project folder (same folder as your json file)
+	- manually input the query in the "Query String" box
 
-4. Click ``calculate``
-Your specified output file should be populated with results.
+<img src="figures/queryInput.png" alt="" style="width: 50%;"/> 
+
+4. Specify the name for the output file where you wish your results to be saved. The file itself will be created and saved in the project folder (same folder as the json file).
+
+5. Once you have setup the desired input, press the "Process Query" button. This will process the received input, create the output file and store the output in it as well as printing the output in the "Query Results" box.
+
+<img src="figures/queryResults.png" alt="" style="width: 50%;"/> 
 
 ## Contributing
 
