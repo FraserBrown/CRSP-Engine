@@ -41,15 +41,17 @@ It is this ***observedAt*** time that is used by our engine to correlate graphs 
 ### CRSP-Engine's Graphical User Interface
 ---
 
-Our engine also features a simple GUI that allows a user to input a query via a text file and graph stream via a json file. After the engine has applied the query over the graph stream, the user can view the result in a outputted text file.
+Our engine also features a simple GUI that allows a user to input a query and graph stream then view the result. A query can be inputted via a text file or by manually typing in a query string. A graph stream can be inputted via a json file. After the engine has applied the query over the graph stream, the user can view the result in a text box displayed on the GUI or via an outputted text file.
 
 ## What is RDF?
 ---
 
-The Resource Description Framework (RDF) is a data model used to relate items of data to one another. RDF statements are displayed as triples in the form subject–predicate–object where: 
-Subject: Denotes a resource
-Predicate: Defines relationship between subject and object
-Object: Denotes a resource or literal
+The Resource Description Framework (RDF) is a data model used to relate items of data to one another. RDF statements are displayed as triples in the form subject–predicate–object where:
+
+Subject: Denotes a resource.  
+Predicate: Defines relationship between subject and object.  
+Object: Denotes a resource or literal.  
+
 High level example of an RDF triple:
 
 ```
@@ -67,7 +69,22 @@ In-depth information on RDF can be found at the following links:
 
 RDF streams are collections of RDF data sent out or received at a continuous rate. Typically these data streams contain RDF triples as shown above with an extra time attribute attached to the triple.
 
-E.g. <s1,p1,o1>,t1 where s1=subject, p1=predicate, o1=object and t1-timestamp.
+E.g. `<s1,p1,o1>,t1` where s1=subject, p1=predicate, o1=object and t1-timestamp.
+
+## How do RDF Graph Streams differ from RDF Streams?
+---
+
+RDF graph streams collect all RDF data at a given event and assign a timestamp. 
+This allows RDF graphs to hold numerious triples that relate to a specific event, eg. the temperature in a room at time 10pm. 
+Abstracting the time element up a layer provides them more structure providing a more usable data format.
+
+```
+General Format: 
+:GraphID {RDF Triple Data} {Timestamp When Graph Data Was Observed}
+
+Example:
+:g1{:axel :isIn :RedRoom. :darko :isIn :RedRoom.} {:g1 :observedAt t1}
+```
 
 ## What is RSPQL?
 ---
@@ -81,7 +98,7 @@ An example of a simple SELECT query using this new syntax is shown below:
 ```
 PREFIX ex: <http://example.org/> 
 SELECT ?p ?o
-FROM NAMED WINDOW :win ON s:examples [RANGE PT5m STEP PT1m]
+FROM NAMED WINDOW :win ON ex:examples [RANGE PT5m STEP PT1m]
 WHERE { 
 	WINDOW :win { 
 		ex:Paris ?p ?o
