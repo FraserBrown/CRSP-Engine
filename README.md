@@ -75,7 +75,7 @@ java -jar out/artifacts/crsp_engine_jar/crsp-engine.jar
 
 You should see the following:
 
-<img src="figures/crsp-gui.png" alt="" style="width: 50%;"/>
+<img src="figures/crsp-gui-good.png" alt="" style="width: 50%;"/>
 
 2. Please specify a .json file that contains the json structure you want. The json file should be stored in your project folder.
 
