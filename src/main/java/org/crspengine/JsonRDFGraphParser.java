@@ -61,6 +61,15 @@ public class JsonRDFGraphParser {
 
 
     /* Private helper functions */
+
+    /***
+     * Extract RDF data tuples from json input, and add them to a model
+     * return the builder.
+     * @param je
+     * @param builder
+     * @param vf
+     * @return builder
+     */
     private ModelBuilder extractRDFData(JsonElement je, ModelBuilder builder, SimpleValueFactory vf){
         if (je.getAsJsonObject().get("@graph").isJsonArray()){
             JsonArray graphData = je.getAsJsonObject().get("@graph").getAsJsonArray();
@@ -84,6 +93,13 @@ public class JsonRDFGraphParser {
         return builder;
     }
 
+    /***
+     *  Gather all relevant data form JSON input and construct an internal graph from it.
+     * @param je
+     * @param builder
+     * @param vf
+     * @return internalgrpah gr
+     */
     private InternalGraph extractAndCreateInternalGraph(JsonElement je, ModelBuilder builder, SimpleValueFactory vf){
         // extract meta data from graph
         String graph_id = je.getAsJsonObject().getAsJsonPrimitive("@id").getAsString();
@@ -102,6 +118,11 @@ public class JsonRDFGraphParser {
     }
 
 
+    /***
+     * Create an array list of internal graphs given a json object
+     * @param jo
+     * @param graphStream
+     */
     private void generateGraphStream(JsonObject jo, ArrayList<InternalGraph> graphStream){
         SimpleValueFactory vf = SimpleValueFactory.getInstance();
         ModelBuilder builder = new ModelBuilder();
@@ -126,10 +147,18 @@ public class JsonRDFGraphParser {
     }
 
     /* Public Functions */
+
+    /***
+     * Convert json string into internal json object (tree structure)
+     */
     public void parseJsonString(){
         this.setJsonTree(this.getParser().parse(this.getJsonStream()));
     }
 
+    /***
+     * Get namespace and other context information about graph stream from json
+     * @param jo
+     */
     public void extractGraphContextFromJson(JsonObject jo){
         //Find @vocab primitive, eg. http://www.example.org/data-vocabulary#
         String namespace_ex = jo.getAsJsonObject("@context").getAsJsonPrimitive("@vocab").getAsString();
@@ -145,6 +174,11 @@ public class JsonRDFGraphParser {
         }
     }
 
+    /***
+     * main wrapper function around parsing functionality, extract context and create graph stream to populate
+     * graphStream arraylist.
+     * @param graphStream
+     */
     public void jsonToInternalGraphStream(ArrayList<InternalGraph> graphStream) {
         // collect context metadata (namespaces and
         if (this.getJsonTree().isJsonObject()) {

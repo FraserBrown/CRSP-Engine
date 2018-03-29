@@ -10,6 +10,15 @@ public class InternalDataManager {
 
 
     /* Constructor */
+
+    /***
+     * Internal data manager is a common point of storing information about the current query in execution.
+     * Data stored here are the:
+     *  -   original json graph stream as a string.
+     *  -   original query as a string
+     *  -   internal graph stream representation
+     *  -   query result as a string
+     */
     public InternalDataManager() {
          this.queryString = null;
          this.jsonString = null;

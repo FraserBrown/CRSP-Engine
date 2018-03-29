@@ -34,6 +34,14 @@ public class RSPQLQueryEvaluator {
 	}
 
     /* Private helper functions */
+
+	/***
+	 * Convert a given unit of time into milliseconds
+	 * @param newValue
+	 * @param originalValue
+	 * @param unitString
+	 * @return unit value in milliseconds
+	 */
 	private int unitCalculations(int newValue, int originalValue, String unitString) {
 		switch(unitString) {
 		case "D":
@@ -53,6 +61,16 @@ public class RSPQLQueryEvaluator {
 	}
 	
     /* Public Functions */
+
+	/***
+	 * Given an RSPQL query, graph stream and database connection compute the query over the given graph stream
+	 * return said query result. Currenlty only RSP-QL query evaluated here is Windowing queries.
+	 * Other SPARQL queries can be evaluated also.
+	 * @param conn
+	 * @param query
+	 * @param graphStream
+	 * @return query result
+	 */
 	public String evaluteQuery(RepositoryConnection conn, SailTupleQuery query, ArrayList<InternalGraph> graphStream) {
 		// while there is still a graph stream to query
 		while (!graphStream.isEmpty()) {

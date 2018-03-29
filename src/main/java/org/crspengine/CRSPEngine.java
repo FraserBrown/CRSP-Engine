@@ -31,6 +31,14 @@ public class CRSPEngine {
     }
 
     /* Private helper functions */
+
+    /***
+     * Top level graph stream conversion function. Converts graph stream from json file to internal queryable
+     * structure, usable by CRSP-Engine.
+     * @param jsonString
+     * @param graphStream
+     * @return populated graph stream array list
+     */
     private ArrayList<InternalGraph> graphStreamFromJson (String jsonString, ArrayList<InternalGraph> graphStream){
 
         //Create JsonRDFGraphParser object
@@ -45,6 +53,14 @@ public class CRSPEngine {
         return graphStream;
     }
 
+    /***
+     * Top level parse and calculate function that parses RSP-QL query from input and applies it over the populated
+     * graph stream.
+     * @param queryString
+     * @param queryResult
+     * @param graphStream
+     * @return
+     */
     private String parseAndCalculateQuery(String queryString, String queryResult, ArrayList<InternalGraph> graphStream) {
         // Create a new Repository. Here, we choose a database implementation
         // that simply stores everything in main memory.
@@ -75,6 +91,10 @@ public class CRSPEngine {
     }
 
     /* Public functions */
+
+    /***
+     * Engine core operations that are required to operate CRSP-Engine, top layer function call for the engine.
+     */
     public void run(){
         String queryResult = "";
         ArrayList<InternalGraph> graphStream = this.idm.getGraphStream();

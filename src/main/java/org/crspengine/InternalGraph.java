@@ -13,7 +13,7 @@ public class InternalGraph {
     private ArrayList<String> ns;   // list of namespaces for this graph
     private String observedAt;  // observed at meta data
     private Model graphData;    // graph data
-    private String graphID; // graphID TODO: change to rdf4j IRI
+    private String graphID; // graphID
 
 
     public InternalGraph() {

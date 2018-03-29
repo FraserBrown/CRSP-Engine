@@ -10,7 +10,13 @@ public class RSPQLQueryParser {
 	}
 	
     /* Public Functions */
-	//Parses a query using a modified version of RDF4J's .prepareTupleQuery(String query) method.
+
+	/***
+	 * Parses a query using a modified version of RDF4J's .prepareTupleQuery(String query) method.
+	 * @param conn
+	 * @param queryString
+	 * @return
+	 */
 	public SailTupleQuery parseRSPQLQuery(RepositoryConnection conn, String queryString) {
 
 		return (SailTupleQuery) conn.prepareTupleQuery(queryString);
