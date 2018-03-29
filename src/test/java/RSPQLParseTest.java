@@ -30,7 +30,7 @@ public class RSPQLParseTest {
     public void canParseSelectQuery(){
         queryString =  "PREFIX ex: <http://example.org/>  \n";
 	    queryString += "SELECT ?p ?o \n";
-	    queryString += "FROM NAMED WINDOW :win ON s:example [RANGE PT10m STEP PT5m] \n";
+	    queryString += "FROM NAMED WINDOW :win ON ex:example [RANGE PT10m STEP PT5m] \n";
 	    queryString += "WHERE { \n";
 	    queryString += "WINDOW :win { \n";
 	    queryString += "	ex:Paris ?p ?o \n";
@@ -53,12 +53,38 @@ public class RSPQLParseTest {
 	    queryString += "PREFIX ns1: <Person> \n";
 	    queryString += "PREFIX ex: <http://example.org/> \n";
 	    queryString += "SELECT ?s (count(?s) as ?countUsers) \n";
-	    queryString += "FROM NAMED WINDOW :win ON s:trips [RANGE PT1H STEP PT1H] \n";
+	    queryString += "FROM NAMED WINDOW :win ON ex:trips [RANGE PT1H STEP PT5M] \n";
 	    queryString += "WHERE { \n";
 	    queryString += "WINDOW :win { \n";
 	    queryString += "    ?s a <" + FOAF.NAMESPACE + "Person> \n";
 	    queryString += "}";
 	    queryString += "   GROUP BY ?s } \n";
+    	
+    	parser.parseRSPQLQuery(conn, queryString);
+
+        // we have made the correct object
+        Assert.assertThat(parser, CoreMatchers.instanceOf(RSPQLQueryParser.class));
+
+        // Correctly typed variables
+        Assert.assertThat(parser.parseRSPQLQuery(conn, queryString), CoreMatchers.is(CoreMatchers.instanceOf(SailTupleQuery.class)));
+    }
+    
+    @Test
+    public void canParseSelectFilterQuery(){
+	    String queryString = " PREFIX f: <http://larkc.eu/csparql/sparql/jena/ext#> ";
+	    	   queryString += "PREFIX ex: <http://myexample.org/> ";
+	    	   queryString += "SELECT ?opinionMaker ?o (COUNT(?follower) AS ?n) ";
+	    	   queryString += "FROM NAMED WINDOW :win ON f:trips [RANGE PT1H STEP PT1H] ";
+	    	   queryString += "WHERE { ";
+	    	   queryString += "WINDOW :win { ";
+	    	   queryString += "?opinionMaker ex:likes ?o . ";
+	    	   queryString += "?follower ex:likes ?o . ";
+	    	   queryString += "FILTER(?opinionMaker!=?follower)";
+	    	   queryString += "FILTER (f:timestamp(?follower,ex:likes,?o) > f:timestamp(?opinionMaker,ex:likes,?o)) ";
+	    	   queryString += "} ";
+	    	   queryString += "GROUP BY ?opinionMaker ?o ";
+	    	   queryString += "HAVING (COUNT(?follower)>3)";
+	    	   queryString += "}";
     	
     	parser.parseRSPQLQuery(conn, queryString);
 
