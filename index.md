@@ -23,6 +23,13 @@ This extension comes in the form of 3 new key developments:
 2. A Graph stream handler.
 3. A frontend GUI.
 
+### Project Scope
+The creation of the CRSP-Engine was a 12 week student project in collaboration with a research group, with the intention of it becoming an open source project after submission. The team consisted of 3 people and as a result the scope had to be altered slightly. Initially the plan was to implement a full representation of RSP-QL features over RDF Graph streams, we quickly learned this was not feasible given  our teams lack of experience in the field and no precedent for this kind of engine.  As a result we broke our project into 4 objectives:
+1. Parse and validate RSP-QL queries,  
+2. Parse, verify and internalise RDF Graph Streams, 
+3. Apply at least 1 RSP-QL language feature (windowing) and all underlying SPARQL queries to internal graph streams, 
+4. Create user friendly and intuitive GUI.
+
 ### CRSP-Engine's Parser
 ---
 
@@ -34,9 +41,10 @@ These ***windows*** can be used by the CRSP-Engine to evaluate a query over a su
 ### CRSP-Engine's Graph implemention.
 ---
 
-Graphs are represented in the CRSP-Engine as an extension of RDF4J's Model interface.
-More specifically, this means graphs are implemented with their ***data*** represented as a Model as well as a unique ***ID*** and ***observedAt*** time which denotes the time that an entire graph was observed at.
-It is this ***observedAt*** time that is used by our engine to correlate graphs and windows.
+Graphs are represented in the CRSP-Engine as our own internal object. Each graph object has the following properties: ***graphData***, ***observedAt*** time and a unique ***ID***. Our internal graph structure was able to utilise RDF4J's Model interface to hold ***RDF data*** represented as a Model within each graph, this made computation over said data simpler. The ***observedAt*** times denote the time that an entire graph was observed at, which will became useful to correlate graphs and windows.
+
+Graph Streams are represented internally as a list of those above graphs, the graphs in the list relate to the original stream graphs in a one-to-one ratio. Our Graph Streams are read into the CRSP-Engine via JSON, this was decided upon as it is a common communication language used on the web, which will provide scalable and robust options in the future.
+
 
 ### CRSP-Engine's Graphical User Interface
 ---
