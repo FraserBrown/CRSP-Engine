@@ -65,11 +65,22 @@ public class RSPQLQueryEvaluator {
 					StreamInfo si = sit.next();
 					LogicalWindow w = (LogicalWindow) si.getWindow();
 
+					// RANGE - The maximum time that windows will slide until.
+					// For example a RANGE of PT10M and a STEP of PT5M will only
+					// query over 2 five minute windows within a given graph stream.
 					RANGE = w.getRangeDescription().getValue();
 					ORIGINAL_RANGE = w.getRangeDescription().getValue();
+					
+					// STEP - The size of each window.
+					// For example a RANGE of PT10M and a STEP of PT5M will only
+					// query over 2 five minute windows within a given graph stream.
 					STEP = w.getStepDescription().getValue();
 					ORIGINAL_STEP = w.getStepDescription().getValue();
+					
+					// The time unit of the RANGE eg. S (seconds), M (minutes), H (hours), D (days)
 					RANGE_UNITS = w.getRangeDescription().getTimeUnit().toString().toUpperCase();
+					
+					// The time unit of the STEP eg. S (seconds), M (minutes), H (hours), D (days)
 					STEP_UNITS = w.getStepDescription().getTimeUnit().toString().toUpperCase();
 
 					System.out.println("Range: " + w.getRangeDescription().getValue()
