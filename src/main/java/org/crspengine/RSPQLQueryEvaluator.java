@@ -64,8 +64,8 @@ public class RSPQLQueryEvaluator {
 
 	/***
 	 * Given an RSPQL query, graph stream and database connection compute the query over the given graph stream
-	 * return said query result. Currenlty only RSP-QL query evaluated here is Windowing queries.
-	 * Other SPARQL queries can be evaluated also.
+	 * return said query result. Currently only the Windowing feature of RSP-QL queries are evaluated here.
+	 * Any SPARQL query features that include the RSP-QL Window pattern can also be evaluated.
 	 * @param conn
 	 * @param query
 	 * @param graphStream
