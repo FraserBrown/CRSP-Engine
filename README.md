@@ -14,24 +14,24 @@ The primary goal for our system is to be able to run any valid RSP-QL query over
 * Java version: 1.8 - below we will show how to install java 1.8 jdk on Linux.
 
 ### Installing Java JDK 1.8 on Linux
-Create java folder in opt and make it your working directory
+Create java folder in opt and make it your working directory.
 ```sh
 sudo mkdir /opt/java && cd /opt/java
 ```
-Download [``java 1.8 jdk``](java-jdl-dl) .tar file
+Download [``java 1.8 jdk``](java-jdl-dl) .tar file.
 
-Copy downloaded file into ``/opt/java``
+Copy downloaded file into ``/opt/java``.
 ```sh
 sudo mv ~/Downloads/jdk-8u161-linux-x64.tar.gz /opt/java
 ```
 
-Uzip jdk, then remove original zip
+Unzip jdk, then remove original zip.
 ```sh
 sudo tar -zxvf jdk-8u161-linux-x64.tar.gz
 sudo rm -rf jdk-8u161-linux-x64.tar.gz
 ```
 
-Update your alternatives entry for ``java``, ``javac``, ``jar`` telling the system where they are instlaled.
+Update your alternatives entry for ``java``, ``javac``, ``jar`` telling the system where they are installed.
 ```sh
 sudo update-alternatives --install /usr/bin/java java /opt/java/jdk1.8.0_161/bin/java 100
 sudo update-alternatives --config java
@@ -41,14 +41,14 @@ sudo update-alternatives --install /usr/bin/jar jar /opt/java/jdk1.8.0_161/bin/j
 sudo update-alternatives --config jar
 ```
 
-Configure engironement variables:
+Configure environment variables:
 ```sh
 export JAVA_HOME=/opt/java/jdk1.8.0_161/
 export JRE_HOME=/opt/java/jdk1.8.0_161/jre
 export PATH=$PATH:/opt/java/jdk1.8.0_161/bin:/opt/java/jdk1.8.0_161/jre/bin
 ```
 
-Confirm java setup:
+Confirm Java setup:
 ```sh
 java -version
 
@@ -119,14 +119,14 @@ $ git checkout dev
 $ git checkout -b your_tag/your_branch_name dev
 ```
 
-3. Develop your code, commit code, and push changes to your new branch
+3. Develop your code, commit code, and push changes to your new branch.
 
 >**NOTE:** Your first push of your to your branch with new changes will have to be in the following format:
 >```sh
 >git push -u origin your_tag/your_branch_name
 >```
 
-4. When development is complete create a pull request
+4. When development is complete create a pull request.
     * Select `` New pull request`` on your newly developed branch from the ``branches`` tab
         <img src="figures/pull-request1.png" alt="pull request 2" style="width: 80%;"/>
     * Select ``base:dev`` as the branch you wish to eventually ``merge`` to and fill out the form details, pressing ``Create pull request`` when finished.
@@ -139,7 +139,7 @@ The below packages will be installed through maven automatically for you:
 * [RDF4J](http://rdf4j.org/) - Framework for processing and handling RDF data
 * [GSON v2.3.1](https://github.com/google/gson) - JSON to Java Object Parser 
 * [JUnit v4.12](https://junit.org/junit4/) - Testing Framework
-* [TravisCi](https://travis-ci.org/) - Continuious Integration software used in the git repository.
+* [TravisCi](https://travis-ci.org/) - Continuous Integration software used in the git repository.
 
 #### Set up Eclipse
 ##### Pre-Requisites:
